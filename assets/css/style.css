@@ -1,0 +1,16 @@
+.wwu-form-field {
+    display: block;
+    clear: both;
+}
+
+.wwu-html-textarea {
+    height: 200px;
+    width: 500px;
+    max-width: 100%;
+    resize: none;
+}
+
+.wwu-form small {
+    display: block;
+    margin-top: 4px;
+}
