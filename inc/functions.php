@@ -9,13 +9,13 @@
 
 function wwu_settings_page(){
     // Adds the plugin settings page 
-	add_submenu_page(
-		'options-general.php',
-		'Opzioni Call to Action',
-		'Call to Action',
-		'manage_options',
-		'call-to-action-options',
-		'wwu_settings_output' 
+    add_submenu_page(
+        'options-general.php',
+        'Opzioni Call to Action',
+        'Call to Action',
+        'manage_options',
+        'call-to-action-options',
+        'wwu_settings_output' 
     );
 }
 
@@ -35,38 +35,38 @@ function wwu_settings_output(){
 <?php }
 
 function wwu_settings_fields(){
-	// Set the fields for our custom plugin page 
-	$page_slug = 'wwu_call_to_action';
-	$option_group = 'wwu_settings';
+    // Set the fields for our custom plugin page 
+    $page_slug = 'wwu_call_to_action';
+    $option_group = 'wwu_settings';
 
-	// Create the section 
-	add_settings_section(
-		'wwu_section_id', 
-		'', 
-		'',
-		$page_slug
-	);
+    // Create the section 
+    add_settings_section(
+        'wwu_section_id', 
+        '', 
+        '',
+        $page_slug
+    );
 
-	// Register fields
-	register_setting( $option_group, 'wwu_html_code', 'wp_kses_post' );
+    // Register fields
+    register_setting( $option_group, 'wwu_html_code', 'wp_kses_post' );
     register_setting( $option_group, 'wwu_tag_slug', 'sanitize_title' );
 
-	// Add the fields
-	add_settings_field(
-		'wwu_html_code',
-		'Codice Call to Action',
-		'wwu_print_html_field',
-		$page_slug,
-		'wwu_section_id'
-	);
+    // Add the fields
+    add_settings_field(
+        'wwu_html_code',
+        'Codice Call to Action',
+        'wwu_print_html_field',
+        $page_slug,
+        'wwu_section_id'
+    );
 
     add_settings_field(
-		'wwu_tag_slug',
-		'Tag (slug)',
-		'wwu_print_tag_input',
-		$page_slug,
-		'wwu_section_id'
-	);
+        'wwu_tag_slug',
+        'Tag (slug)',
+        'wwu_print_tag_input',
+        $page_slug,
+        'wwu_section_id'
+    );
 }
 
 function wwu_print_html_field(){
@@ -98,22 +98,22 @@ function wwu_print_tag_input(){
 
 function wwu_print_cta( $content ){
     // Actually prints the call to action if a post has a certain tag 
-    $tag_slug = get_option( 'wwu_tag_slug' );
-    $cta_code = get_option( 'wwu_html_code' );
     $new_content = $content;
 
-    if( is_single() && $tag_slug !== '' && has_tag( $tag_slug ) && $cta_code !== '' ){ // Check if everything matches        
-        // Count paragraphs
-        $p_after = 4; 
-        $content = explode( "</p>", $content );
-        $new_content = '';
-        for( $i = 0; $i < count( $content ); $i++) {
-            if( $i == $p_after ){
-                // Only print the code if we're after the fourth paragraph
-                $new_content .= $cta_code;
-            }
+    if( is_single() ){
+        if( has_tag( get_option( 'wwu_tag_slug' ) ) && get_option( 'wwu_html_code' ) !== '' ){
+            // Count paragraphs if everything matches
+            $p_after = 4; 
+            $content = explode( "</p>", $content );
+            $new_content = '';
+            for( $i = 0; $i < count( $content ); $i++) {
+                if( $i == $p_after ){
+                    // Only print the code if we're after the fourth paragraph
+                    $new_content .= get_option( 'wwu_html_code' );
+                }
 
-            $new_content .= $content[ $i ] . "</p>";
+                $new_content .= $content[ $i ] . "</p>";
+            }
         }
     }
 
@@ -144,7 +144,7 @@ add_action( 'admin_menu', 'wwu_settings_page' );
 add_action( 'admin_init', 'wwu_settings_fields' );
 
 // Content filter 
-add_action( 'the_content', 'wwu_print_cta' );
+add_filter( 'the_content', 'wwu_print_cta' );
 
 // Enqueue scripts and styles 
 add_action( 'admin_enqueue_scripts', 'wwu_assets' );?>
